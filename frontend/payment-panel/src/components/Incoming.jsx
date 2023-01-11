@@ -36,9 +36,9 @@ const IncomingTrasnaction = ({ transactions }) => {
                   {trans.payers.map((user) => user.username).join(",")}
                 </Typography>
                 <Stack direction={"row"} spacing={1}>
-                  {/* <Button variant="contained" color="success">
+                  <Button variant="contained" color="success">
                     Compeleted
-                  </Button> */}
+                  </Button>
                   <Button
                     onClick={() => deleteTransaction(trans.id)}
                     variant="contained"

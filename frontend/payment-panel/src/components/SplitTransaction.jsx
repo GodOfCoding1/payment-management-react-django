@@ -41,6 +41,7 @@ export default function SplitTransaction({ users, mapUsers }) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [usernames, setUsersLabel] = useState([]);
+  const [category, setCategory] = useState([]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -60,6 +61,8 @@ export default function SplitTransaction({ users, mapUsers }) {
     for (let u in usernames) {
       data.append("payers", usernames[u]);
     }
+    data.append("type", "split");
+    data.append("category", category);
     const csrfToken = await api["get"]("auth/token");
     try {
       await api["post"]("/transactions/", data, {
@@ -161,13 +164,36 @@ export default function SplitTransaction({ users, mapUsers }) {
               margin="normal"
               required
               fullWidth
+              name="about"
+              label="About"
+              id="about"
+              autoComplete="about"
+            />
+            <FormControl fullWidth>
+              <InputLabel id="category">Category</InputLabel>
+              <Select
+                labelId="category"
+                id="category"
+                value={category}
+                label="Category"
+                onChange={(event) => setCategory(event.target.value)}
+              >
+                <MenuItem value={"food"}>Food</MenuItem>
+                <MenuItem value={"education"}>Education</MenuItem>
+                <MenuItem value={"entertainment"}>Entertainment</MenuItem>
+                <MenuItem value={"transportation"}>Transportation</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               name="amount"
               label="Amount"
               type="number"
               id="amount"
               autoComplete="amount"
             />
-
             <Button
               type="submit"
               fullWidth

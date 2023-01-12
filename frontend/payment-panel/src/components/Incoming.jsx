@@ -7,11 +7,26 @@ const IncomingTrasnaction = ({ transactions }) => {
     try {
       const csrfToken = await api["get"]("auth/token");
       await api["delete"](`/transactions/${id}/`, {
-        headers: csrfToken.data
-          ? { "X-CSRFToken": csrfToken.data.csrfToken }
-          : {},
+        headers: { "X-CSRFToken": csrfToken.data.csrfToken },
         withCredentials: true,
       });
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateTransaction = async (id) => {
+    try {
+      const csrfToken = await api["get"]("auth/token");
+      await api["patch"](
+        `/transactions/${id}/`,
+        { status: "completed" },
+        {
+          headers: { "X-CSRFToken": csrfToken.data.csrfToken },
+          withCredentials: true,
+        }
+      );
       window.location.reload();
     } catch (error) {
       console.log(error);
@@ -32,19 +47,20 @@ const IncomingTrasnaction = ({ transactions }) => {
                   {trans.amount}
                 </Typography>
                 <Typography variant="body2">
+                  <b>Type: </b>
+                  {trans.type}
+                </Typography>
+                <Typography variant="body2">
                   <b>Payers: </b>
                   {trans.payers.map((user) => user.username).join(",")}
                 </Typography>
                 <Stack direction={"row"} spacing={1}>
-                  <Button variant="contained" color="success">
-                    Compeleted
-                  </Button>
                   <Button
                     onClick={() => deleteTransaction(trans.id)}
                     variant="contained"
                     color="primary"
                   >
-                    Cancel
+                    {trans.status === "completed" ? "Delete" : "Cancel"}
                   </Button>
                 </Stack>
               </Stack>

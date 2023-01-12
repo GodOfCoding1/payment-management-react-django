@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAdminUser,IsAuthenticated
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.contrib.auth import logout
-
+import json
 
 def csrf(request):
     return JsonResponse({'csrfToken': get_token(request)})
@@ -69,27 +69,32 @@ class TransactionViewSet(viewsets.ViewSet):
         return Response(res)
 
     def create(self, request):
-        data=request.POST.dict()
-        print("hii",data)
-        payers = request.data.get('payers', None)
+
+        data=request.data
+        data=dict(data)
+
+        for i in data:
+            data[i]= data[i][0] if len(data[i])<2 else data[i]
+        payers = data.get('payers', None)
+
         if not payers:
             return Response({"message":"invalid payers"},status=status.HTTP_400_BAD_REQUEST)
 
         userData=UserSerializer(request.user)
         u_id=userData.data.get("id",None)
         payee=User.objects.get(id=u_id)
-
         data["payee"]=payee
-
         trans=TransactionSerilaizer()
         trans.create(validated_data=data)
             
         return Response({"message":"transaction succesfully created"},status=status.HTTP_201_CREATED)
     
     def partial_update(self, request, pk=None):
-        Transaction.objects.get(pk=pk)
-
-        pass
+        trans=Transaction.objects.get(pk=pk)
+        data=request.data
+        trans.status=data.get("status")
+        trans.save()
+        return Response(status=status.HTTP_206_PARTIAL_CONTENT)
 
     def destroy(self, request, pk=None):
         trans=Transaction.objects.get(pk=pk)

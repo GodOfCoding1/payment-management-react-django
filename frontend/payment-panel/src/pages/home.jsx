@@ -62,25 +62,29 @@ export default function Home() {
       temp["income"] = data.incoming.length
         ? data.incoming.reduce(
             (prev, curr) =>
-              prev +
-              (curr.payers.length === 1
-                ? curr.amount
-                : curr.amount - curr.amount / (curr.payers?.length + 1)),
+              curr.status === "completed"
+                ? prev +
+                  (curr.type === "normal"
+                    ? curr.amount
+                    : curr.amount - curr.amount / (curr.payers?.length + 1))
+                : 0,
             0
           )
         : 0;
       temp["spends"] = data.outgoing.length
         ? data.outgoing.reduce(
             (prev, curr) =>
-              prev +
-              (curr.payers.length === 1
-                ? curr.amount
-                : curr.amount / (curr.payers?.length + 1)),
+              curr.status === "completed"
+                ? prev +
+                  (curr.type === "normal"
+                    ? curr.amount
+                    : curr.amount / (curr.payers?.length + 1))
+                : 0,
 
             0
           )
         : 0;
-      console.log();
+
       setAccountInfo(temp);
     })();
   }, []);

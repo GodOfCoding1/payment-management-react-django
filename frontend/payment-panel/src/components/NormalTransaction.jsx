@@ -151,7 +151,6 @@ export default function NormalTransaction({ users }) {
             </FormControl>
             <TextField
               margin="normal"
-              required
               fullWidth
               name="about"
               label="About"

@@ -63,12 +63,11 @@ export default function SplitTransaction({ users, mapUsers }) {
     }
     data.append("type", "split");
     data.append("category", category);
+
     const csrfToken = await api["get"]("auth/token");
     try {
       await api["post"]("/transactions/", data, {
-        headers: csrfToken.data
-          ? { "X-CSRFToken": csrfToken.data.csrfToken }
-          : {},
+        headers: { "X-CSRFToken": csrfToken.data.csrfToken },
         withCredentials: true,
       });
       window.location.reload("");
@@ -162,7 +161,6 @@ export default function SplitTransaction({ users, mapUsers }) {
             </FormControl>
             <TextField
               margin="normal"
-              required
               fullWidth
               name="about"
               label="About"

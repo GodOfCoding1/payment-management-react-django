@@ -1,7 +1,38 @@
 import { Button, Paper, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
+import { api } from "../apis/axios";
 
 const OutgoingTrasnaction = ({ transactions }) => {
+  const deleteTransaction = async (id) => {
+    try {
+      const csrfToken = await api["get"]("auth/token");
+      await api["delete"](`/transactions/${id}/`, {
+        headers: { "X-CSRFToken": csrfToken.data.csrfToken },
+        withCredentials: true,
+      });
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateTransaction = async (id) => {
+    try {
+      const csrfToken = await api["get"]("auth/token");
+      await api["patch"](
+        `/transactions/${id}/`,
+        { status: "completed" },
+        {
+          headers: { "X-CSRFToken": csrfToken.data?.csrfToken },
+          withCredentials: true,
+        }
+      );
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Stack sx={{ width: "100%" }} spacing={2} flexDirection={"col"}>
       {transactions.length
@@ -19,12 +50,25 @@ const OutgoingTrasnaction = ({ transactions }) => {
                   <b>Receiver: </b>
                   {trans.payee.username}
                 </Typography>
+                <Typography variant="body2">
+                  <b>Type: </b>
+                  {trans.type}
+                </Typography>
                 <Stack direction={"row"} spacing={1}>
-                  {/* <Button variant="contained" color="success">
-                    Compeleted
-                  </Button> */}
-                  <Button variant="contained" color="primary">
-                    Cancel
+                  <Button
+                    onClick={() => updateTransaction(trans.id)}
+                    variant="contained"
+                    color="success"
+                    disabled={trans.status === "completed"}
+                  >
+                    Pay
+                  </Button>
+                  <Button
+                    onClick={() => deleteTransaction(trans.id)}
+                    variant="contained"
+                    color="primary"
+                  >
+                    {trans.status === "completed" ? "Delete" : "Cancel"}
                   </Button>
                 </Stack>
               </Stack>

@@ -36,7 +36,6 @@ def login_user(request):
     username = request.data.get('username', None)
     password = request.data.get('password', None)
 
-    print(get_token(request=request))
     if password and username:
        user = authenticate(request=request,
                                 username=username, password=password)
